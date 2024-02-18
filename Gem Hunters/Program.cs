@@ -12,7 +12,7 @@ class Position
         this.y = y;
     }
 }
-class player
+class Player
 {
     public string Name;
     Position position;
@@ -33,4 +33,31 @@ class player
         }
     }
 }
+
+class Board
+{
+    public Cell[,];
+
+    public Board()
+    {
+        Grid = new Cell[6, 6];
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 6; j++)
+            {
+                Grid[i, j] = new Cell("-");
+            }
+        }
+
+        // Add players
+        Grid[0, 0].Occupant = "P1";
+        Grid[5, 5].Occupant = "P2";
+
+    }
+
+
+}
+
+
+
 
