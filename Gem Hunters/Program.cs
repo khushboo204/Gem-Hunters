@@ -40,24 +40,98 @@ class Board
 
     public Board()
     {
-        Grid = new Cell[6, 6];
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 6; j++)
-            {
-                Grid[i, j] = new Cell("-");
-            }
-        }
-
-        // Add players
-        Grid[0, 0].Occupant = "P1";
-        Grid[5, 5].Occupant = "P2";
+      
 
     }
 
+    public void Display()
+    {
+        for (int i = 0; i< 6; i++)
+        {
+            for (int j = 0; j< 6; j++)
+            {
+                Console.WriteLine();
+            }
+        Console.WriteLine();
+        }
+    }
+
+    public void IsValidMove(Player player, char direction)
+    {
+        int x = player.X;
+        int y = player.Y;
+
+        switch (direction)
+        {
+            case 'U':
+                y--;
+                break;
+            case 'D':
+                y++;
+                break;
+            case 'L':
+                x--;
+                break;
+            case 'R':
+                x++;
+                break;
+        }
+    }
+
+    public void CollectGem(Player player)
+    {
+        
+    }
 
 }
 
+class Cell
+{
+    public string Occupant;
 
+}
+
+class Game
+{
+    public Board Board;
+    public Player Player1;
+    public Player Player2;
+    public Player CurrentTurn;
+    public int TotalTurns;
+
+    public Game()
+    {
+        
+    }
+
+    public void Start()
+    {
+        
+    }
+
+    public void SwitchTurn()
+    {
+        
+    }
+
+    public void IsGameOver()
+    {
+        
+    }
+
+    public void AnnounceWinner()
+    {
+        
+    }
+
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        
+    }
+}
 
 
