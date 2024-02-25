@@ -3,32 +3,36 @@ using System.Collections.Generic;
 
 class Position
 {
-    public int x;
-    public int y;
+    public int X;
+    public int Y;
 
     public Position(int x, int y)
     {
-        this.x = x;
-        this.y = y;
+        X = x;
+        Y = y;
     }
 }
 class Player
 {
-    public string Name;
-    Position position;
-    public int Gemcount;
- 
+    public string Name { get; }
+    public Position Position { get; set; }
+    public int Gemcount { get; set; } 
     public void Move(char direction)
     {
+        //Change the position of the player based on the input
         switch (direction)
         {
             case 'U':
+                Position = new Position(Position.X, Position.Y - 1);
                 break;
             case 'D':
+                Position = new Position(Position.X, Position.Y + 1);
                 break;
             case 'L':
+                Position = new Position(Position.X - 1, Position.Y);
                 break;
             case 'R':
+                Position = new Position(Position.X + 1, Position.Y);
                 break;
         }
     }
@@ -36,11 +40,12 @@ class Player
 
 class Board
 {
-    public Cell[,];
+    public Cell[,] Grid;
 
     public Board()
     {
-      
+        //Initial board 
+        Grid = new Cell[6, 6];
 
     }
 
