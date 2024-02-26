@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Xml.Linq;
 
 class Position
-{
-    public int X;
-    public int Y;
+{   
+    public int X { get; }
+    public int Y { get; }
 
     public Position(int x, int y)
     {
@@ -16,6 +18,8 @@ class Player
 {
     public string Name { get; }
     public Position Position { get; set; }
+
+    //public Board Board { get; set; }
     public int Gemcount { get; set; }
 
     public Player(string name, Position position)
@@ -24,21 +28,28 @@ class Player
         Position = position;
         Gemcount = 0;
     }
-    public void Move(char direction)
+    public void Move(char direction, Board board)
     {
+        Console.WriteLine(Name);
+        //board.updateCurrentPosition(Position.X, Position.Y);
+        //board.Grid[Position.Y, Position.X] = "-";
         //Change the position of the player based on the input
         switch (direction)
         {
             case 'U':
+                board.updateCurrentPosition(Position.X, Position.Y);
                 Position = new Position(Position.X, Position.Y - 1);
                 break;
             case 'D':
+                board.updateCurrentPosition(Position.X, Position.Y);
                 Position = new Position(Position.X, Position.Y + 1);
                 break;
             case 'L':
+                board.updateCurrentPosition(Position.X, Position.Y);
                 Position = new Position(Position.X - 1, Position.Y);
                 break;
             case 'R':
+                board.updateCurrentPosition(Position.X, Position.Y);
                 Position = new Position(Position.X + 1, Position.Y);
                 break;
         }
@@ -101,9 +112,10 @@ class Board
 
     public bool IsValidMove(Player player, char direction)
     {
-        int x = player.X;
-        int y = player.Y;
+        int x = player.Position.X;
+        int y = player.Position.Y;
 
+        //Console.WriteLine(x);
         switch (direction)
         {
             case 'U':
@@ -119,6 +131,9 @@ class Board
                 x++;
                 break;
         }
+
+        /*Console.WriteLine(x);
+        Console.WriteLine(y);*/
         if (x < 0 || x >= 6 || y < 0 || y >= 6)
         {
             return false;
@@ -129,15 +144,45 @@ class Board
         {
             return false;
         }
+
         return true;
     }
 
-    public void CollectGem(Player player)
+    public bool CollectGem(Player player)
     {
-        
+        if (Grid[player.Position.Y, player.Position.X] == "G")
+        {
+            player.Gemcount++;
+            Grid[player.Position.Y, player.Position.X] = "-";
+            return true;
+        }
+        return false;
     }
 
-    
+    public bool updateUpcomingPosition(Player player)
+    {
+        if (Grid[player.Position.Y, player.Position.X] != "0")
+        {
+            Grid[player.Position.Y, player.Position.X] = player.Name;
+            return true;
+        }
+
+        Console.WriteLine("Obstacle hit.");
+        return false;
+    }
+
+    public bool updateCurrentPosition(int x, int y)
+    {
+        if (Grid[y, x] != "0")
+        {
+            Grid[y, x] = "-";
+            return true;
+        }
+
+        Console.WriteLine("Upcoming position is Obstacle.");
+        return false;
+    }
+
 }
 
 class Cell
@@ -166,47 +211,85 @@ class Game
         Player2 = new Player("P2", new Position(5, 5));
         CurrentTurn = Player1;
         TotalTurns = 0;
-
     }
 
     public void Start()
     {
-        char direction;
-        Console.WriteLine($"Turn {TotalTurns + 1}: {CurrentTurn.Name}'s turn");
-
-        Board.Display();
-        do
+        while (!IsGameOver())
         {
-            Console.Write("Enter direction (U/D/L/R): ");
-            direction = Console.ReadKey().KeyChar;
-            Console.WriteLine();
-        } while (!Board.IsValidMove(CurrentTurn, direction));
+            char direction;
+            Console.WriteLine($"Turn {TotalTurns + 1}: {CurrentTurn.Name}'s turn");
 
-        CurrentTurn.Move(direction);
-        if (Board.CollectGem(CurrentTurn))
-        {
-            Console.WriteLine($"{CurrentTurn.Name} collected a gem!");
+            Board.Display();
+            do
+            {
+                Console.Write("Enter direction (U/D/L/R): ");
+                direction = Console.ReadKey().KeyChar;
+                Console.WriteLine();
+            } while (!Board.IsValidMove(CurrentTurn, direction));
+
+            CurrentTurn.Move(direction, Board);
+            if (Board.CollectGem(CurrentTurn))
+            {
+                Console.WriteLine($"{CurrentTurn.Name} collected a gem!");
+            }
+
+            Board.updateUpcomingPosition(CurrentTurn);
+
+
+            TotalTurns++;
+            SwitchTurn();
         }
-
-        TotalTurns++;
-        SwitchTurn();
+        AnnounceWinner();
+        
+        
     }
 
    
 
     public void SwitchTurn()
     {
-        
+
+        if( CurrentTurn == Player1)
+        {
+            CurrentTurn = Player2;
+        }
+        else
+        {
+            CurrentTurn = Player1;
+        }
     }
 
-    public void IsGameOver()
+    public bool IsGameOver()
     {
-        
+        if(TotalTurns >= 30)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void AnnounceWinner()
     {
-        
+        Console.WriteLine("Game over!");
+        Console.WriteLine($"Player 1 collected {Player1.Gemcount} gems.");
+        Console.WriteLine($"Player 2 collected {Player2.Gemcount} gems.");
+
+        if (Player1.Gemcount > Player2.Gemcount)
+        {
+            Console.WriteLine("Player 1 wins!");
+        }
+        else if (Player2.Gemcount > Player1.Gemcount)
+        {
+            Console.WriteLine("Player 2 wins!");
+        }
+        else
+        {
+            Console.WriteLine("It's a tie!");
+        }
     }
 
 }
